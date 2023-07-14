@@ -1,0 +1,51 @@
+{% extends 'home.html' %}
+
+{% block head %}
+<style>
+    .div-1, .div-2 {
+        border: 2px solid #e9e9e9;
+        width: 440px;
+        height: 330px;
+        margin: 3rem 5rem 3rem 3rem;
+        
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div id="div-1" class="div-1">
+    <video class="camera-0" width="440px" height="330px" controls loop >
+        <source src="{{ url_for('static',filename='social.mp4') }}" type="video/mp4">
+        The video tag is incompatible with your browser.
+    </video>
+    <p>
+        <button type="button" class="btn btn-primary" onclick="speedUp()"> Speed Up</button>
+        <button type="button" class="btn btn-primary" onclick="speedDown()"> Speed Down</button>
+    </p>
+</div>
+<div id="div-2" class="div-2">
+    <img class="camera-0" width="440px" height="330px" src="{{url_for('video_feed')}}" alt="">
+</div>
+<script>
+    let video = document.querySelector('video');
+    
+    // Make the playing speed the default
+    video.defaultPlaybackRate = 0.5
+    
+    // The video is loaded after setting
+    video.load();
+    function speedUp() {
+       
+       // The playback speed has been increased by 1
+       video.playbackRate += 1;
+    }
+    function speedDown() {
+       
+       // The playback speed has been decreased by 1
+       if (video.playbackRate > 1)
+          video.playbackRate -= 1;
+    }
+ </script>
+{% endblock %}
