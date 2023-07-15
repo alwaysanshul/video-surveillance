@@ -4,7 +4,7 @@
 <head>
     <title>Home</title>
     <style>
-        /* Global Styles */
+        
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -13,7 +13,7 @@
             background-size: cover;
         }
 
-        /* Navbar Styles */
+        
         .navbar {
             background-color: #000000;
             width: 330px;
@@ -38,7 +38,7 @@
             text-decoration: none;
         }
 
-        /* Content Styles */
+        
         .content {
             margin-left: 320px;
             padding: 20px;
@@ -178,6 +178,7 @@
             margin: 3rem 3rem 3rem 3rem;
         }
     </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% block head %}
 
     {% endblock %}
@@ -188,10 +189,11 @@
         <nav class="navbar">
             <ul>
                 <li><a href="\home\object-detection">OBJECT DETECTION</a></li>
-                <li><a href="#fall-detection">FALL DETECTION</a></li>
-                <li><a href="#vehicle-accident">VEHICLE ACCIDENT</a></li>
-                <li><a href="#social-distancing" style="margin-bottom: 60px;">SOCIAL DISTANCING</a></li>
+                <li><a href="\home\fall-detection">FALL DETECTION</a></li>
+                <li><a href="\home\car-accident">VEHICLE ACCIDENT</a></li>
+                <li><a href="\home\social-distancing" style="margin-bottom: 60px;">SOCIAL DISTANCING</a></li>
                 <button id="alarm" class="custom-btn btn-7 alarm" style="margin-left: 90px;">ALARM</button>
+                <audio id="alarmAudio" src="../static/sound.mp3"></audio>
                 <div class="grid-container">
                     <div class="grid-item">
                         <button id="camera1" class="custom-btn btn-7" onclick="window.open('../home/user' ,'_self')">CAMERA 1</button>
@@ -257,6 +259,9 @@
                     CAMERA 1</h3>
             `;
         }  
+        function playAlarm() {
+        $('#alarmAudio')[0].play();
+        }
     </script>
 </body>
 
