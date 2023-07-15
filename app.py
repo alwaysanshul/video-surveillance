@@ -116,9 +116,19 @@ def gen_frames():
         except Exception:
             pass  
     
-    cap = cv2.VideoCapture("E:/ANSHUL FOLDER/Intelligent Security Surveillance System/S.H.A.D.Y-main/social.mp4")
+    
     # cap = cv2.VideoCapture(0)
-        
+    if case == 'normal':
+        cap = cv2.VideoCapture(0)
+    elif case == 'object':
+        cap = cv2.VideoCapture("E:/ANSHUL FOLDER/Intelligent Security Surveillance System/S.H.A.D.Y-main/social.mp4")    
+    elif case == 'social':
+        cap = cv2.VideoCapture("E:/ANSHUL FOLDER/Intelligent Security Surveillance System/S.H.A.D.Y-main/social.mp4")
+    elif case == 'fall':
+        cap = cv2.VideoCapture("E:/ANSHUL FOLDER/Intelligent Security Surveillance System/S.H.A.D.Y-main/fall.mp4")
+    elif case == 'vehicle':
+        cap = cv2.VideoCapture("E:/ANSHUL FOLDER/Intelligent Security Surveillance System/S.H.A.D.Y-main/car.mp4")
+
     frame_width = int(cap.get(3))                                        # Returns the width and height of capture video   
     frame_height = int(cap.get(4))
     new_height, new_width = frame_height // 2, frame_width // 2
@@ -147,13 +157,13 @@ def gen_frames():
         if case == 'normal':
             image = frame_resized
         elif case == 'object':
-            image = cvDrawBoxes_object(detections, frame_resized)        # Call the function cvDrawBoxes_object() for colored bounding box per class
+            image = cvDrawBoxes_object(detections, frame_resized)      
         elif case == 'social':
-            image = cvDrawBoxes_social(detections, frame_resized)        # Call the function cvDrawBoxes_social() for colored bounding box per class
+            image = cvDrawBoxes_social(detections, frame_resized)   
         elif case == 'fall':
-            image = cvDrawBoxes_fall(detections, frame_resized)          # Call the function cvDrawBoxes_fall() for colored bounding box per class
+            image = cvDrawBoxes_fall(detections, frame_resized)          
         elif case == 'vehicle':
-            image = cvDrawBoxes_vehicle(detections, frame_resized)       # Call the function cvDrawBoxes_vehicle() for colored bounding box per class
+            image = cvDrawBoxes_vehicle(detections, frame_resized)   
 
 
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
