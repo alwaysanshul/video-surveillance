@@ -1,7 +1,4 @@
 from flask import Flask, redirect, render_template, url_for, request, Response
-
-
-
 from ctypes import *
 import math
 import random
@@ -9,50 +6,23 @@ import os
 import cv2
 import numpy as np
 import time
-
 import sys  
 myPath='C:/Yolo_v4/darknet/build/darknet/x64'
 sys.path.insert(1, myPath)      
 import darknet
-
-from itertools import combinations
-# import pafy
-# import youtube_dl
+from itertools import combinations  
 
 netMain = None
 metaMain = None
 altNames = None
 
-video_link = None
 case = None
 
 def is_close(p1, p2):
-    """
-    #================================================================
-    # Purpose : Calculate Euclidean Distance between two points
-    #================================================================    
-    :param:
-    p1, p2 = two points for calculating Euclidean Distance
-
-    :return:
-    dst = Euclidean Distance between two 2d points
-    """
     dst = math.sqrt(p1**2 + p2**2)
-    #=================================================================#
     return dst 
 
 def convertBack(x, y, w, h): 
-    #================================================================
-    # Purpose : Converts center coordinates to rectangle coordinates
-    #================================================================  
-    """
-    :param:
-    x, y = midpoint of bbox
-    w, h = width, height of the bbox
-    
-    :return:
-    xmin, ymin, xmax, ymax
-    """
     xmin = int(round(x - (w / 2)))
     xmax = int(round(x + (w / 2)))
     ymin = int(round(y - (h / 2)))
@@ -60,15 +30,6 @@ def convertBack(x, y, w, h):
     return xmin, ymin, xmax, ymax
 
 def cvDrawBoxes_object(detections, img):
-    """
-    :param:
-    detections = total detections in one frame
-    img = image from detect_image method of darknet
-
-    :return:
-    img with bbox
-    """
-    # Colored labels dictionary
     color_dict = {
         'person' : [0, 255, 255], 'bicycle': [238, 123, 158], 'car' : [24, 245, 217], 'motorbike' : [224, 119, 227],
         'aeroplane' : [154, 52, 104], 'bus' : [179, 50, 247], 'train' : [180, 164, 5], 'truck' : [82, 42, 106],
@@ -155,24 +116,12 @@ def gen_frames():
         except Exception:
             pass  
     
-    # for ch in video_link:
-    #     if ch == '&':
-    #         video_link = video_link[:video_link.index(ch)]
-    
     cap = cv2.VideoCapture("E:/ANSHUL FOLDER/Intelligent Security Surveillance System/S.H.A.D.Y-main/social.mp4")
-    # cap = cv2.VideoCapture(0) 
-    # url = video_link
-    # video = pafy.new(url)
-    # best = video.getbest(preftype="mp4")
-    # cap = cv2.VideoCapture()
-    # cap.open(best.url)    
-    # camera = cv2.VideoCapture()
-    # camera.open(best.url)  
+    # cap = cv2.VideoCapture(0)
         
     frame_width = int(cap.get(3))                                        # Returns the width and height of capture video   
     frame_height = int(cap.get(4))
     new_height, new_width = frame_height // 2, frame_width // 2
-    #print("Video Reolution: ",(width, height))
     
     print("Starting the YOLO loop...")
 
@@ -195,7 +144,9 @@ def gen_frames():
         
         image = None
         # image = cvDrawBoxes_object(detections, frame_resized) 
-        if case == 'object':
+        if case == 'normal':
+            image = frame_resized
+        elif case == 'object':
             image = cvDrawBoxes_object(detections, frame_resized)        # Call the function cvDrawBoxes_object() for colored bounding box per class
         elif case == 'social':
             image = cvDrawBoxes_social(detections, frame_resized)        # Call the function cvDrawBoxes_social() for colored bounding box per class
@@ -203,7 +154,8 @@ def gen_frames():
             image = cvDrawBoxes_fall(detections, frame_resized)          # Call the function cvDrawBoxes_fall() for colored bounding box per class
         elif case == 'vehicle':
             image = cvDrawBoxes_vehicle(detections, frame_resized)       # Call the function cvDrawBoxes_vehicle() for colored bounding box per class
-                    
+
+
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         ret, buffer = cv2.imencode('.jpg', image)
         frame = buffer.tobytes()
@@ -229,6 +181,8 @@ def login():
     
 @app.route('/home/<name>')
 def home(name):
+    global case
+    case = 'normal'
     return render_template('home.html',user=name)
 
 @app.route('/home/object-detection')
