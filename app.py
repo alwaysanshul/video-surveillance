@@ -126,7 +126,8 @@ def cvDrawBoxes_fall(detections, img):
     	#================================================================= 
         if len(fall_alert_list)!=0:
             text = "Fall Detected"
-        
+            file = r'static\sound.mp3'
+            os.system(f'start "" "{file}"')
         else:
             text = "Fall Not Detected"
             
@@ -196,6 +197,9 @@ def cvDrawBoxes_social(detections, img):
     	# Purpose : Display Risk Analytics and Show Risk Indicators
     	#=================================================================        
         text = "People at Risk: %s" % str(len(red_zone_list)) 			# Count People at Risk
+        if(len(red_line_list)>2):
+            file = r'static\sound.mp3'
+            # os.system(f'start "" "{file}"')       
         location = (10,25)												# Set the location of the displayed text
         cv2.putText(img, text, location, cv2.FONT_HERSHEY_SIMPLEX, 1, (246,86,86), 2, cv2.LINE_AA)  # Display Text
 
@@ -271,6 +275,8 @@ def cvDrawBoxes_vehicle(detections, img):
     	#=================================================================        
         if len(vehicle_red_zone_list)!=0:
             text = "Crash Detected"     
+            file = r'static\sound.mp3'
+            os.system(f'start "" "{file}"')
         else:
             text = "Crash Not Detected"
             
