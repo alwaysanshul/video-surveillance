@@ -1,5 +1,4 @@
 from flask import Flask, redirect, render_template, url_for, request, Response
-from ctypes import *
 import math
 import random
 import os
@@ -10,6 +9,7 @@ import sys
 myPath='C:/Yolo_v4/darknet/build/darknet/x64'
 sys.path.insert(1, myPath)      
 import darknet
+from ctypes import *
 from itertools import combinations  
 
 netMain = None
@@ -75,18 +75,6 @@ def cvDrawBoxes_object(detections, img):
     return img
 
 def cvDrawBoxes_fall(detections, img):
-    """
-    :param:
-    detections = total detections in one frame
-    img = image from detect_image method of darknet
-
-    :return:
-    img with bbox
-    """
-    
-    #================================================================
-    # Purpose : Filter out Persons class from detections
-    #================================================================
     if len(detections) > 0:  						# At least 1 detection in the image and check detection presence in a frame  
         centroid_dict = dict() 						# Function creates a dictionary and calls it centroid_dict
         objectId = 0								# We inialize a variable called ObjectId and set it to 0
@@ -101,11 +89,7 @@ def cvDrawBoxes_fall(detections, img):
                 xmin, ymin, xmax, ymax = convertBack(float(x), float(y), float(w), float(h))   # Convert from center coordinates to rectangular coordinates, We use floats to ensure the precision of the BBox            
                 # Append center point of bbox for persons detected.
                 centroid_dict[objectId] = (int(x), int(y), xmin, ymin, xmax, ymax) # Create dictionary of tuple with 'objectId' as the index center points and bbox
-    #=================================================================
-    
-    #=================================================================
-    # Purpose : Determine whether the fall is detected or not 
-    #=================================================================            	
+           	
         fall_alert_list = [] # List containing which Object id is in under threshold distance condition. 
         red_line_list = []
         for id,p in centroid_dict.items():
@@ -119,11 +103,7 @@ def cvDrawBoxes_fall(detections, img):
                 cv2.rectangle(img, (box[2], box[3]), (box[4], box[5]), (255, 0, 0), 2) # Create Red bounding boxes  #starting point, ending point size of 2
             else:
                 cv2.rectangle(img, (box[2], box[3]), (box[4], box[5]), (0, 255, 0), 2) # Create Green bounding boxes
-		#=================================================================#
 
-		#=================================================================
-    	# Purpose : Displaying the results
-    	#================================================================= 
         if len(fall_alert_list)!=0:
             text = "Fall Detected"
             file = r'static\sound.mp3'
@@ -137,22 +117,11 @@ def cvDrawBoxes_fall(detections, img):
         else:
             cv2.putText(img, text, location, cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2, cv2.LINE_AA)  # Display Text
 
-        #=================================================================#
+
     return img
 
 def cvDrawBoxes_social(detections, img):
-    """
-    :param:
-    detections = total detections in one frame
-    img = image from detect_image method of darknet
 
-    :return:
-    img with bbox
-    """
-    #================================================================
-    # Purpose : Filter out Persons class from detections and get 
-    #           bounding box centroid for each person detection.
-    #================================================================
     if len(detections) > 0:  						# At least 1 detection in the image and check detection presence in a frame  
         centroid_dict = dict() 						# Function creates a dictionary and calls it centroid_dict
         objectId = 0								# We inialize a variable called ObjectId and set it to 0
@@ -168,11 +137,7 @@ def cvDrawBoxes_social(detections, img):
                 # Append center point of bbox for persons detected.
                 centroid_dict[objectId] = (int(x), int(y), xmin, ymin, xmax, ymax) # Create dictionary of tuple with 'objectId' as the index center points and bbox
                 objectId += 1 #Increment the index for each detection      
-    #=================================================================#
-    
-    #=================================================================
-    # Purpose : Determine which person bbox are close to each other
-    #=================================================================            	
+       	
         red_zone_list = [] # List containing which Object id is in under threshold distance condition. 
         red_line_list = []
         for (id1, p1), (id2, p2) in combinations(centroid_dict.items(), 2): # Get all the combinations of close detections, #List of multiple items - id1 1, points 2, 1,3
@@ -191,11 +156,7 @@ def cvDrawBoxes_social(detections, img):
                 cv2.rectangle(img, (box[2], box[3]), (box[4], box[5]), (255, 0, 0), 2) # Create Red bounding boxes  #starting point, ending point size of 2
             else:
                 cv2.rectangle(img, (box[2], box[3]), (box[4], box[5]), (0, 255, 0), 2) # Create Green bounding boxes
-		#=================================================================#
-
-		#=================================================================
-    	# Purpose : Display Risk Analytics and Show Risk Indicators
-    	#=================================================================        
+       
         text = "People at Risk: %s" % str(len(red_zone_list)) 			# Count People at Risk
         if(len(red_line_list)>2):
             file = r'static\sound.mp3'
@@ -210,23 +171,11 @@ def cvDrawBoxes_social(detections, img):
             check_line_y = abs(end_point[1] - start_point[1])			# Calculate the line coordinates for y
             if (check_line_x < 75) and (check_line_y < 25):				# If both are We check that the lines are below our threshold distance.
                 cv2.line(img, start_point, end_point, (255, 0, 0), 2)   # Only above the threshold lines are displayed. 
-        #=================================================================#
+
     return img    
 
 def cvDrawBoxes_vehicle(detections, img):
-    """
-    :param:
-    detections = total detections in one frame
-    img = image from detect_image method of darknet
 
-    :return:
-    img with bbox
-    """
-    
-    #================================================================
-    # Purpose : Filter out Cars class from detections and get 
-    #           bounding box centroid for each car detection.
-    #================================================================
     if len(detections) > 0:  						# At least 1 detection in the image and check detection presence in a frame  
         centroid_dict = dict() 						# Function creates a dictionary and calls it centroid_dict
         objectId = 0								# We inialize a variable called ObjectId and set it to 0
@@ -242,19 +191,11 @@ def cvDrawBoxes_vehicle(detections, img):
                 # Append center point of bbox for cars detected.
                 centroid_dict[objectId] = (int(x), int(y), xmin, ymin, xmax, ymax) # Create dictionary of tuple with 'objectId' as the index center points and bbox
                 objectId += 1 #Increment the index for each detection      
-    #=================================================================#
-    
-    #=================================================================
-    # Purpose : Determine which car boxes are close to each other
-    #=================================================================            	
+           	
         vehicle_red_zone_list = [] # List containing which Object id is in under threshold distance condition. 
         vehicle_red_line_list = []
         for (id1, p1), (id2, p2) in combinations(centroid_dict.items(), 2): # Get all the combinations of close detections, #List of multiple items - id1 1, points 2, 1,3
-            #dx, dy = p1[0] - p2[0], p1[1] - p2[1]  	# Check the difference between centroid x: 0, y :1
-            #distance = is_close(dx, dy) 			# Calculates the Euclidean distance
-            
-            #if distance < 50.0:						# Set our distance threshold - If they meet this condition then..
-            
+
             if not ((p1[2]>=p2[4]) or (p1[4]<=p2[2]) or (p1[5]<=p2[3]) or (p1[3]>=p2[5])):
                 if id1 not in vehicle_red_zone_list:
                     vehicle_red_zone_list.append(id1)       #  Add Id to a list
@@ -268,11 +209,7 @@ def cvDrawBoxes_vehicle(detections, img):
                 cv2.rectangle(img, (box[2], box[3]), (box[4], box[5]), (255, 0, 0), 2) # Create Red bounding boxes  #starting point, ending point size of 2
             else:
                 cv2.rectangle(img, (box[2], box[3]), (box[4], box[5]), (0, 255, 0), 2) # Create Green bounding boxes
-		#=================================================================#
-
-		#=================================================================
-    	# Purpose : Displaying the results and sending an alert message
-    	#=================================================================        
+     
         if len(vehicle_red_zone_list)!=0:
             text = "Crash Detected"     
             file = r'static\sound.mp3'
@@ -333,7 +270,7 @@ def gen_frames():
     
     # cap = cv2.VideoCapture(0)
     if case == 'normal':
-        cap = cv2.VideoCapture("E:/ANSHUL FOLDER/video-surveillance/static/social.mp4")
+        cap = cv2.VideoCapture("E:/ANSHUL FOLDER/video-surveillance/static/fall.mp4")
     elif case == 'object':
         cap = cv2.VideoCapture("E:/ANSHUL FOLDER/video-surveillance/static/object.mp4")    
     elif case == 'social':
@@ -355,7 +292,6 @@ def gen_frames():
     while True:                                                          # Load the input frame and write output frame.
         prev_time = time.time()
         ret, frame_read = cap.read()
-        # Check if frame present :: 'ret' returns True if frame present, otherwise break the loop.
         if not ret:
             break
 
